@@ -21,13 +21,19 @@ number_of_cells.times do |i|
     connections: [neigh_0, neigh_1, neigh_2, neigh_3, neigh_4, neigh_5].reject { |n| n.negative? }
   )
 
-  debug "Node #{i} graph: #{graph[i]}"
+  # debug "Node #{i} graph: #{graph[i]}"
 end
 
-cells_with_minerals = cells.each_with_object({}) do |(i, cell), mem|
+egg_cell_indices = cells.each_with_object(Set.new) do |(i, cell), mem|
+  next unless cell[:type] == EGG
+
+  mem << i
+end
+
+mineral_cell_indices = cells.each_with_object(Set.new) do |(i, cell), mem|
   next unless cell[:type] == CRYSTAL
 
-  mem[i] = cell
+  mem << i
 end
 
 number_of_bases = gets.to_i
@@ -40,14 +46,20 @@ opp_base_indices = gets.split(" ").map do |i|
   cells[i.to_i][:opp_base] = true
   i.to_i
 end
-cells.each_pair do |k, v|
-  # STDERR.puts "#{k}: #{v}"
-end
-debug "=========="
-cells_with_minerals.each_pair do |k, v|
-  debug "#{k}: #{v}"
-end
+# cells.each_pair do |k, v|
+#   STDERR.puts "#{k}: #{v}"
+# end
+# debug "=========="
+# cells_with_minerals.each_pair do |k, v|
+#   debug "#{k}: #{v}"
+# end
 
 debug "Path between bases: #{my_base_indices.first} and #{opp_base_indices.first}"
-debug graph.dijkstra_shortest_path(my_base_indices.first, opp_base_indices.first).to_s
+path_between_bases = graph.dijkstra_shortest_path(my_base_indices.first, opp_base_indices.first)
+debug path_between_bases.to_s
+
+cells_between_bases = path_between_bases[1..-2].size
+
+contested_cell_indices = graph.neighbors_within(my_base_indices.first, cells_between_bases) & graph.neighbors_within(opp_base_indices.first, cells_between_bases)
+debug "Contested cells are: #{contested_cell_indices}"
 # == INIT ==
