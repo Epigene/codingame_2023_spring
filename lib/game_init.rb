@@ -56,10 +56,13 @@ end
 
 debug "Path between bases: #{my_base_indices.first} and #{opp_base_indices.first}"
 path_between_bases = graph.dijkstra_shortest_path(my_base_indices.first, opp_base_indices.first)
-debug path_between_bases.to_s
+debug "  #{path_between_bases.to_s}"
 
 cells_between_bases = path_between_bases[1..-2].size
 
 contested_cell_indices = graph.neighbors_within(my_base_indices.first, cells_between_bases) & graph.neighbors_within(opp_base_indices.first, cells_between_bases)
 debug "Contested cells are: #{contested_cell_indices}"
+
+nearby_cell_indices = graph.neighbors_within(my_base_indices.first, cells_between_bases)
+debug "Nearby cells are: #{contested_cell_indices}"
 # == INIT ==

@@ -11,6 +11,12 @@ loop do
     # debug "#{i}: #{cells[i]}" if cells[i][:resources] > 0
   end
 
+  # manual debugging move
+  # if true
+  #   puts "LINE #{my_base_indices.first} 5 1; MESSAGE Manual try"
+  #   next
+  # end
+
   # @return [Integer] ==
   eggs_being_gathered = egg_cell_indices.find do |i|
     cells[i][:my_ants] > 0 && cells[i][:resources] > 0
@@ -34,6 +40,15 @@ loop do
     next
   end
   #======================
+  eggs_nearby = cells.slice(*(nearby_cell_indices & egg_cell_indices)).values.max_by do |cell|
+    cell[:resources]
+  end
+  debug "eggs_nearby: #{eggs_nearby}"
+
+  if eggs_nearby && cells[eggs_nearby[:i]][:resources] > 0
+    puts "LINE #{my_base_indices.first} #{eggs_nearby[:i]} 1; MESSAGE uncontested eggs on #{eggs_nearby[:i]}"
+    next
+  end
 
   # @return [Integer] ===
   cell_being_harvested = mineral_cell_indices.find do |i|
