@@ -8,7 +8,7 @@ class Graph
   def initialize
     @structure =
       Hash.new do |hash, key|
-        hash[key] = {outgoing: Set.new, incoming: Set.new}
+        hash[key] = {neighbors: Set.new}
       end
   end
 
@@ -21,13 +21,19 @@ class Graph
     structure.keys
   end
 
-  # adds a bi-directional connection between two nodes
-  def connect_nodes_bidirectionally(node1, node2)
-    structure[node1][:incoming] << node2
-    structure[node1][:outgoing] << node2
+  def ensure_bidirectional_connection!(node1, node2)
+    ensure_bidirectional_connections!(root: node1, connections: [node2])
+  end
 
-    structure[node2][:incoming] << node1
-    structure[node2][:outgoing] << node1
+  def ensure_bidirectional_connections!(root:, connections: [])
+    n1 = structure[root]
+
+    connections.each do |connection|
+      n1[:neighbors] << connection
+
+      c = structure[connection]
+      c[:neighbors] << root
+    end
 
     nil
   end
@@ -35,8 +41,8 @@ class Graph
   # Severs all connections to and from this node
   # @return [nil]
   def remove_node(node)
-    structure[node][:incoming].each do |other_node|
-      structure[other_node][:outgoing] -= [node]
+    structure[node][:neighbors].each do |other_node|
+      structure[other_node][:neighbors] -= [node]
     end
 
     structure.delete(node)
@@ -66,7 +72,7 @@ class Graph
         # raise("Queue is empty, but destination not reached!")
       end
 
-      neighboring_nodes = structure[dequeued_node][:outgoing]
+      neighboring_nodes = structure[dequeued_node][:neighbors]
       # debug "neighboring_nodes for #{ dequeued_node }: '#{ neighboring_nodes }'"
 
       neighboring_nodes.each do |node|
@@ -100,21 +106,19 @@ class Graph
 
   private
 
-    def structure
-      @structure
-    end
+  attr_reader :structure
 
-    def initialize_copy(copy)
-      dupped_structure =
-        structure.each_with_object({}) do |(k, v), mem|
-          mem[k] =
-            v.each_with_object({}) do |(sk, sv), smem|
-              smem[sk] = sv.dup
-            end
-        end
+  def initialize_copy(copy)
+    dupped_structure =
+      structure.each_with_object({}) do |(k, v), mem|
+        mem[k] =
+          v.each_with_object({}) do |(sk, sv), smem|
+            smem[sk] = sv.dup
+          end
+      end
 
-      copy.instance_variable_set("@structure", dupped_structure)
+    copy.instance_variable_set(:@structure, dupped_structure)
 
-      super
-    end
+    super
+  end
 end
