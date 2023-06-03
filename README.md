@@ -5,7 +5,12 @@ Code for bot that controls ants in bot-coding challenge.
 * There is a tension between harsvesting Eggs VS harvesting Crystals. Should cover for cases
   where going straight for crystal mining is the winning strategy.  
 * Can spend time during setup to drop cells out of the way of anything.
-* Finding mid-cell(s) and then midline of the "battlefield" will be useful. 
+* Finding mid-cell(s) and then midline of the "battlefield" will be useful. Going even deeper,
+  based on the distance between the bases we can come to a concept of "contested ground" -
+  a diamond-shaped terytorry "between" bases. The most contested is the cell in the middle,
+  then the 6 cells around it and then two cells immediately between bases. 
+* Gathering can be optimised by looking at the remaining resources in a cell and the expected
+  gathering from it. If there's over-gather, the overflow can be redirected to the next target. 
 
 ## Use
 1. Place files in `lib/`, and require them in `lib/codinbot.rb` like you normally would.

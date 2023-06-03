@@ -104,6 +104,23 @@ class Graph
     end
   end
 
+  # @param root [Object] root node's key/name
+  # @param distance [Integer] values [1, Infinity]
+  # @return [Set<Object>] returns a Set of neighbor key/names which are within the specified distance
+  def neighbors_within(root, distance)
+    neighbors = structure[root][:neighbors]
+
+    if distance == 1
+      return neighbors
+    else
+      neighbors.each do |neighbor|
+        neighbors |= neighbors_within(neighbor, distance - 1)
+      end
+    end
+
+    neighbors - [root].to_set
+  end
+
   private
 
   attr_reader :structure

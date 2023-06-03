@@ -89,4 +89,29 @@ RSpec.describe Graph, instance_name: :graph do
       end
     end
   end
+
+  describe "#neighbors_within(root, distance)" do
+    subject(:neighbors_within) { graph.neighbors_within }
+
+    # 1--b--2
+    #  \   /
+    #   x-y
+    #   \
+    #    z
+    before do
+      graph.ensure_bidirectional_connections!(root: 1, connections: ["b", "x"])
+      graph.ensure_bidirectional_connections!(root: "b", connections: [1, 2])
+      graph.ensure_bidirectional_connections!(root: 2, connections: ["b", "y"])
+      graph.ensure_bidirectional_connections!(root: "x", connections: [1, "y", "z"])
+      graph.ensure_bidirectional_connections!(root: "y", connections: ["x", 2])
+      graph.ensure_bidirectional_connections!(root: "z", connections: ["x"])
+    end
+
+    it "returns a Set of neighbor node keys that are within the asked distance", :aggregate_failures do
+      expect(graph.neighbors_within("y", 1)).to eq([2, "x"].to_set)
+      expect(graph.neighbors_within("z", 1)).to eq(["x"].to_set)
+      expect(graph.neighbors_within("z", 2)).to eq(["x", 1, "y"].to_set)
+      expect(graph.neighbors_within("z", 3)).to eq(["x", 1, "y", "b", 2].to_set)
+    end
+  end
 end
