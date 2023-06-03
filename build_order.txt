@@ -1,4 +1,6 @@
 lib/requires.rb
 lib/graph.rb
+lib/strenght_distributor.rb
+lib/decider.rb
 lib/game_init.rb
 lib/game_loop.rb

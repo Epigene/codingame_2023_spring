@@ -10,7 +10,9 @@ Code for bot that controls ants in bot-coding challenge.
   a diamond-shaped terytorry "between" bases. The most contested is the cell in the middle,
   then the 6 cells around it and then two cells immediately between bases. 
 * Gathering can be optimised by looking at the remaining resources in a cell and the expected
-  gathering from it. If there's over-gather, the overflow can be redirected to the next target. 
+  gathering from it. If there's over-gather, the overflow can be redirected to the next target.
+* Using a marker for cell "heat" based on how far it is from resources. Clusters of cells
+  with resources would be extra desirable.
 
 ## Use
 1. Place files in `lib/`, and require them in `lib/codinbot.rb` like you normally would.
