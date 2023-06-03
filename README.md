@@ -1,5 +1,11 @@
-# Condinbot
-Not a gem! A sandbox where to develop bots for codingame in TDD manner, in separate, testable files.
+# AntBot
+Code for bot that controls ants in bot-coding challenge.
+
+## Insights
+* There is a tension between harsvesting Eggs VS harvesting Crystals. Should cover for cases
+  where going straight for crystal mining is the winning strategy.  
+* Can spend time during setup to drop cells out of the way of anything.
+* Finding mid-cell(s) and then midline of the "battlefield" will be useful. 
 
 ## Use
 1. Place files in `lib/`, and require them in `lib/codinbot.rb` like you normally would.
