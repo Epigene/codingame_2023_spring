@@ -10,7 +10,11 @@ class Decider
 
     @graph = Graph.new
 
+    @eggs_at_start_of_game = 0
+
     @cells.each do |i, data|
+      @eggs_at_start_of_game += data[:resources] if data[:type] == EGG
+
       @graph.ensure_bidirectional_connections!(
         root: i,
         connections: data.slice(:neigh_0, :neigh_1, :neigh_2, :neigh_3, :neigh_4, :neigh_5).values.reject { |n| n.negative? }
@@ -22,6 +26,16 @@ class Decider
       path = @graph.dijkstra_shortest_path(i, @my_base_indices.first)
 
       @cells[i][:distance_from_my_base] =
+        if path
+          path.size - 1
+        else
+          # as in the cell is base itself.
+          0
+        end
+
+      path = @graph.dijkstra_shortest_path(i, @opp_base_indices.first)
+
+      @cells[i][:distance_from_opp_base] =
         if path
           path.size - 1
         else
@@ -89,7 +103,10 @@ class Decider
     #======================
 
     # @return [cell hash] ===
-    eggs_closer_to_me = cells.slice(*egg_cell_indices).values.sort_by do |cell|
+    eggs_closer_to_me = cells.slice(*egg_cell_indices).values.filter_map do |cell|
+      next if cell[:distance_from_my_base] >= cell[:distance_from_opp_base]
+      cell
+    end.sort_by do |cell|
       [cell[:distance_from_my_base], -cell[:resources]]
     end&.first
     debug "eggs_closer_to_me: #{eggs_closer_to_me}"
@@ -113,8 +130,8 @@ class Decider
     #======================
 
     # @return [Cell hash]
-    best_mining_candidate = cells.slice(*mineral_cell_indices).values.max_by do |cell|
-      cell[:resources]
+    best_mining_candidate = cells.slice(*mineral_cell_indices).values.min_by do |cell|
+      [cell[:distance_from_my_base], -cell[:resources]]
     end
     debug "Best mining candidate: #{best_mining_candidate}"
 
@@ -130,7 +147,7 @@ class Decider
 
   private
 
-  attr_reader :cells, :graph, :number_of_bases, :my_base_indices, :opp_base_indices
+  attr_reader :cells, :graph, :number_of_bases, :my_base_indices, :opp_base_indices, :eggs_at_start_of_game
 
   def egg_cell_indices
     @egg_cell_indices ||= cells.each_with_object(Set.new) do |(i, cell), mem|
@@ -171,5 +188,9 @@ class Decider
     @nearby_cell_indices ||= graph.neighbors_within(my_base_indices.first, cells_between_bases)
     debug "Nearby cells are: #{@nearby_cell_indices}"
     @nearby_cell_indices
+  end
+
+  def my_half_of_eggs
+    @my_half_of_eggs ||= eggs_at_start_of_game / 2
   end
 end

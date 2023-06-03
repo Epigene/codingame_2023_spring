@@ -138,6 +138,48 @@ RSpec.describe Decider, instance_name: :decider do
           is_expected.to eq("BEACON 4 3077; BEACON 2 3077; BEACON 8 3846; BEACON 18 3077; MESSAGE Expanding on egg gathering")
         end
       end
+
+      context "when I've just gathered my half of eggs and should just go for mineral win" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>9},
+            {:i=>2, :resources=>0, :my_ants=>18, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>13},
+            {:i=>4, :resources=>0, :my_ants=>20, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :resources=>0, :my_ants=>0, :opp_ants=>14},
+            {:i=>8, :resources=>0, :my_ants=>13, :opp_ants=>0},
+            {:i=>9, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :resources=>265, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :resources=>265, :my_ants=>0, :opp_ants=>0},
+            {:i=>13, :resources=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :resources=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :resources=>20, :my_ants=>0, :opp_ants=>4},
+            {:i=>18, :resources=>0, :my_ants=>9, :opp_ants=>0},
+            {:i=>19, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>26, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a decision to " do
+          is_expected.to eq("BEACON 4 5000; BEACON 12 5000; MESSAGE Lining up towards 12")
+        end
+      end
     end
   end
 end
