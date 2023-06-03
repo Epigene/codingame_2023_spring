@@ -46,6 +46,7 @@ class Decider
   end
 
   def decide_on(cell_updates:)
+    @best_mining_candidate = nil # resetting memoisation from previous turns
     my_ants_total = 0
 
     cell_updates.each do |cell_update|
@@ -85,7 +86,14 @@ class Decider
 
         return "#{base}; #{expansion_portion}; MESSAGE Expanding on egg gathering"
       else
-        return "#{base}; MESSAGE Continuing egg gathering"
+        cell = cells[eggs_being_gathered]
+        expected_gathered_eggs = [cell[:resources], cell[:my_ants]].min
+
+        if expected_gathered_eggs + my_ants_total >= ant_count_cutoff
+          return "#{base}; LINE #{my_base_indices.first} #{best_mining_candidate[:i]} 1000; MESSAGE Finishing egg gathering and looking for bonus minerals"
+        else
+          return "#{base}; MESSAGE Continuing egg gathering"
+        end
       end
     end
     #======================
@@ -103,17 +111,19 @@ class Decider
     #======================
 
     # @return [cell hash] ===
-    eggs_closer_to_me = cells.slice(*egg_cell_indices).values.filter_map do |cell|
-      next if cell[:distance_from_my_base] >= cell[:distance_from_opp_base]
-      cell
-    end.sort_by do |cell|
-      [cell[:distance_from_my_base], -cell[:resources]]
-    end&.first
-    debug "eggs_closer_to_me: #{eggs_closer_to_me}"
+    if my_ants_total < ant_count_cutoff
+      eggs_closer_to_me = cells.slice(*egg_cell_indices).values.filter_map do |cell|
+        next if cell[:distance_from_my_base] >= cell[:distance_from_opp_base]
+        cell
+      end.sort_by do |cell|
+        [cell[:distance_from_my_base], -cell[:resources]]
+      end&.first
+      debug "eggs_closer_to_me: #{eggs_closer_to_me}"
 
-    if eggs_closer_to_me && cells[eggs_closer_to_me[:i]][:resources] > 0
-      # puts "LINE #{my_base_indices.first} #{eggs_closer_to_me[:i]} 1; MESSAGE uncontested eggs on #{eggs_closer_to_me[:i]}"
-      return "#{StrengthDistributor.call(from: my_base_indices.first, to: eggs_closer_to_me[:i], ants: my_ants_total, graph: graph)}; MESSAGE close eggs on #{eggs_closer_to_me[:i]}"
+      if eggs_closer_to_me && cells[eggs_closer_to_me[:i]][:resources] > 0
+        # puts "LINE #{my_base_indices.first} #{eggs_closer_to_me[:i]} 1; MESSAGE uncontested eggs on #{eggs_closer_to_me[:i]}"
+        return "#{StrengthDistributor.call(from: my_base_indices.first, to: eggs_closer_to_me[:i], ants: my_ants_total, graph: graph)}; MESSAGE close eggs on #{eggs_closer_to_me[:i]}"
+      end
     end
     #======================
 
@@ -124,15 +134,19 @@ class Decider
     debug "cell_being_harvested: #{cell_being_harvested}"
 
     if cell_being_harvested
-      # puts "LINE #{my_base_indices.first} #{cell_being_harvested} 1; MESSAGE Continuing harvesting of #{cell_being_harvested}"
-      return "#{StrengthDistributor.call(from: my_base_indices.first, to: cell_being_harvested, ants: my_ants_total, graph: graph)}; MESSAGE Continuing harvesting of #{cell_being_harvested}"
+      minerals_next_to_gathering = graph.neighbors_within(cell_being_harvested, 1) & mineral_cell_indices
+      base = StrengthDistributor.call(from: my_base_indices.first, to: cell_being_harvested, ants: my_ants_total, graph: graph)
+
+      if minerals_next_to_gathering.any?
+        bonus_portion = minerals_next_to_gathering.map { |i| "BEACON #{i} 1000" }.join("; ")
+        return "#{base}; #{bonus_portion}; MESSAGE Expanding on mineral gater"
+      else
+        return "#{base}; MESSAGE Continuing harvesting solitary #{cell_being_harvested}"
+      end
     end
     #======================
 
     # @return [Cell hash]
-    best_mining_candidate = cells.slice(*mineral_cell_indices).values.min_by do |cell|
-      [cell[:distance_from_my_base], -cell[:resources]]
-    end
     debug "Best mining candidate: #{best_mining_candidate}"
 
     if best_mining_candidate && cells[best_mining_candidate[:i]][:resources] > 0
@@ -148,6 +162,12 @@ class Decider
   private
 
   attr_reader :cells, :graph, :number_of_bases, :my_base_indices, :opp_base_indices, :eggs_at_start_of_game
+
+  def best_mining_candidate
+    @best_mining_candidate ||= cells.slice(*mineral_cell_indices).values.min_by do |cell|
+      [cell[:distance_from_my_base], -cell[:resources]]
+    end
+  end
 
   def egg_cell_indices
     @egg_cell_indices ||= cells.each_with_object(Set.new) do |(i, cell), mem|
@@ -192,5 +212,10 @@ class Decider
 
   def my_half_of_eggs
     @my_half_of_eggs ||= eggs_at_start_of_game / 2
+  end
+
+  # When I have half of the max ants possible
+  def ant_count_cutoff
+    STARTING_ANT_COUNT + my_half_of_eggs
   end
 end

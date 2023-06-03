@@ -176,8 +176,139 @@ RSpec.describe Decider, instance_name: :decider do
           ]
         end
 
-        it "returns a decision to " do
+        it "returns a decision to mine closest, best minerals" do
           is_expected.to eq("BEACON 4 5000; BEACON 12 5000; MESSAGE Lining up towards 12")
+        end
+      end
+
+      context "when current ant allocation will-gather and can be spread better" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>14},
+            {:i=>2, :resources=>0, :my_ants=>13, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>9},
+            {:i=>4, :resources=>0, :my_ants=>19, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :resources=>0, :my_ants=>0, :opp_ants=>13},
+            {:i=>8, :resources=>0, :my_ants=>13, :opp_ants=>0},
+            {:i=>9, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :resources=>265, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :resources=>265, :my_ants=>0, :opp_ants=>0},
+            {:i=>13, :resources=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :resources=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :resources=>24, :my_ants=>0, :opp_ants=>0},
+            {:i=>18, :resources=>7, :my_ants=>8, :opp_ants=>0},
+            {:i=>19, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>26, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a decision to shift part of the focus to mining" do
+          is_expected.to eq(
+            "BEACON 4 2453; BEACON 2 2453; BEACON 8 2453; BEACON 18 2642; LINE 4 12 1000; " \
+            "MESSAGE Finishing egg gathering and looking for bonus minerals"
+          )
+        end
+      end
+
+      context "when there are a few last minerals on the map" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>2, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>30},
+            {:i=>4, :resources=>0, :my_ants=>30, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>8, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>9, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :resources=>55, :my_ants=>0, :opp_ants=>30},
+            {:i=>12, :resources=>0, :my_ants=>30, :opp_ants=>0},
+            {:i=>13, :resources=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :resources=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>18, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>19, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>26, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a decision to proceed with mining" do
+          is_expected.to eq("BEACON 4 5000; BEACON 14 5000; MESSAGE Lining up towards 14")
+        end
+      end
+
+      context "when we're at the mining stage and could expand on a nearby cell" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>9},
+            {:i=>2, :resources=>0, :my_ants=>15, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>13},
+            {:i=>4, :resources=>0, :my_ants=>19, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :resources=>0, :my_ants=>0, :opp_ants=>14},
+            {:i=>8, :resources=>0, :my_ants=>11, :opp_ants=>0},
+            {:i=>9, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :resources=>265, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :resources=>260, :my_ants=>5, :opp_ants=>0},
+            {:i=>13, :resources=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :resources=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :resources=>20, :my_ants=>0, :opp_ants=>4},
+            {:i=>18, :resources=>0, :my_ants=>10, :opp_ants=>0},
+            {:i=>19, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>26, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a decision to beacon the nearby mineral patches also" do
+          is_expected.to eq(
+            "BEACON 4 5000; BEACON 12 5000; BEACON 14 1000; MESSAGE Expanding on mineral gater"
+          )
         end
       end
     end
