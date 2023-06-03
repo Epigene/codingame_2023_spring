@@ -312,5 +312,110 @@ RSpec.describe Decider, instance_name: :decider do
         end
       end
     end
+
+    context "when seed=-1636922316538223000, bases are very far, init is slow" do
+      let(:cells) do
+        {
+          0 => {:i=>0, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>1, :neigh_2=>3, :neigh_3=>-1, :neigh_4=>2, :neigh_5=>4},
+          1 => {:i=>1, :type=>1, :resources=>11, :neigh_0=>7, :neigh_1=>9, :neigh_2=>11, :neigh_3=>3, :neigh_4=>0, :neigh_5=>-1},
+          2 => {:i=>2, :type=>1, :resources=>11, :neigh_0=>4, :neigh_1=>0, :neigh_2=>-1, :neigh_3=>8, :neigh_4=>10, :neigh_5=>12},
+          3 => {:i=>3, :type=>0, :resources=>0, :neigh_0=>1, :neigh_1=>11, :neigh_2=>13, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>0},
+          4 => {:i=>4, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>0, :neigh_3=>2, :neigh_4=>12, :neigh_5=>14},
+          5 => {:i=>5, :type=>0, :resources=>0, :neigh_0=>15, :neigh_1=>17, :neigh_2=>7, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>24},
+          6 => {:i=>6, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>23, :neigh_3=>16, :neigh_4=>18, :neigh_5=>8},
+          7 => {:i=>7, :type=>1, :resources=>29, :neigh_0=>17, :neigh_1=>19, :neigh_2=>9, :neigh_3=>1, :neigh_4=>-1, :neigh_5=>5},
+          8 => {:i=>8, :type=>1, :resources=>29, :neigh_0=>2, :neigh_1=>-1, :neigh_2=>6, :neigh_3=>18, :neigh_4=>20, :neigh_5=>10},
+          9 => {:i=>9, :type=>2, :resources=>85, :neigh_0=>19, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>11, :neigh_4=>1, :neigh_5=>7},
+          10 => {:i=>10, :type=>2, :resources=>85, :neigh_0=>12, :neigh_1=>2, :neigh_2=>8, :neigh_3=>20, :neigh_4=>-1, :neigh_5=>-1},
+          11 => {:i=>11, :type=>0, :resources=>0, :neigh_0=>9, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>13, :neigh_4=>3, :neigh_5=>1},
+          12 => {:i=>12, :type=>0, :resources=>0, :neigh_0=>14, :neigh_1=>4, :neigh_2=>2, :neigh_3=>10, :neigh_4=>-1, :neigh_5=>-1},
+          13 => {:i=>13, :type=>1, :resources=>12, :neigh_0=>11, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>21, :neigh_4=>-1, :neigh_5=>3},
+          14 => {:i=>14, :type=>1, :resources=>12, :neigh_0=>22, :neigh_1=>-1, :neigh_2=>4, :neigh_3=>12, :neigh_4=>-1, :neigh_5=>-1},
+          15 => {:i=>15, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>25, :neigh_2=>17, :neigh_3=>5, :neigh_4=>24, :neigh_5=>30},
+          16 => {:i=>16, :type=>0, :resources=>0, :neigh_0=>6, :neigh_1=>23, :neigh_2=>29, :neigh_3=>-1, :neigh_4=>26, :neigh_5=>18},
+          17 => {:i=>17, :type=>0, :resources=>0, :neigh_0=>25, :neigh_1=>-1, :neigh_2=>19, :neigh_3=>7, :neigh_4=>5, :neigh_5=>15},
+          18 => {:i=>18, :type=>0, :resources=>0, :neigh_0=>8, :neigh_1=>6, :neigh_2=>16, :neigh_3=>26, :neigh_4=>-1, :neigh_5=>20},
+          19 => {:i=>19, :type=>1, :resources=>31, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>9, :neigh_4=>7, :neigh_5=>17},
+          20 => {:i=>20, :type=>1, :resources=>31, :neigh_0=>10, :neigh_1=>8, :neigh_2=>18, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>-1},
+          21 => {:i=>21, :type=>0, :resources=>0, :neigh_0=>13, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>27, :neigh_4=>23, :neigh_5=>-1},
+          22 => {:i=>22, :type=>0, :resources=>0, :neigh_0=>28, :neigh_1=>24, :neigh_2=>-1, :neigh_3=>14, :neigh_4=>-1, :neigh_5=>-1},
+          23 => {:i=>23, :type=>2, :resources=>230, :neigh_0=>-1, :neigh_1=>21, :neigh_2=>27, :neigh_3=>29, :neigh_4=>16, :neigh_5=>6},
+          24 => {:i=>24, :type=>2, :resources=>230, :neigh_0=>30, :neigh_1=>15, :neigh_2=>5, :neigh_3=>-1, :neigh_4=>22, :neigh_5=>28},
+          25 => {:i=>25, :type=>0, :resources=>0, :neigh_0=>33, :neigh_1=>35, :neigh_2=>-1, :neigh_3=>17, :neigh_4=>15, :neigh_5=>-1},
+          26 => {:i=>26, :type=>0, :resources=>0, :neigh_0=>18, :neigh_1=>16, :neigh_2=>-1, :neigh_3=>34, :neigh_4=>36, :neigh_5=>-1},
+          27 => {:i=>27, :type=>2, :resources=>280, :neigh_0=>21, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>37, :neigh_4=>29, :neigh_5=>23},
+          28 => {:i=>28, :type=>2, :resources=>280, :neigh_0=>38, :neigh_1=>30, :neigh_2=>24, :neigh_3=>22, :neigh_4=>-1, :neigh_5=>-1},
+          29 => {:i=>29, :type=>0, :resources=>0, :neigh_0=>23, :neigh_1=>27, :neigh_2=>37, :neigh_3=>39, :neigh_4=>-1, :neigh_5=>16},
+          30 => {:i=>30, :type=>0, :resources=>0, :neigh_0=>40, :neigh_1=>-1, :neigh_2=>15, :neigh_3=>24, :neigh_4=>28, :neigh_5=>38},
+          31 => {:i=>31, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>33, :neigh_3=>-1, :neigh_4=>40, :neigh_5=>-1},
+          32 => {:i=>32, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>39, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>34},
+          33 => {:i=>33, :type=>2, :resources=>85, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>35, :neigh_3=>25, :neigh_4=>-1, :neigh_5=>31},
+          34 => {:i=>34, :type=>2, :resources=>85, :neigh_0=>26, :neigh_1=>-1, :neigh_2=>32, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>36},
+          35 => {:i=>35, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>25, :neigh_5=>33},
+          36 => {:i=>36, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>26, :neigh_2=>34, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>-1},
+          37 => {:i=>37, :type=>0, :resources=>0, :neigh_0=>27, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>39, :neigh_5=>29},
+          38 => {:i=>38, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>40, :neigh_2=>30, :neigh_3=>28, :neigh_4=>-1, :neigh_5=>-1},
+          39 => {:i=>39, :type=>0, :resources=>0, :neigh_0=>29, :neigh_1=>37, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>32, :neigh_5=>-1},
+          40 => {:i=>40, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>31, :neigh_2=>-1, :neigh_3=>30, :neigh_4=>38, :neigh_5=>-1},
+        }
+      end
+
+      let(:my_base_indices) { [39] }
+      let(:opp_base_indices) { [40] }
+
+      let(:cell_updates) do
+        [
+          {:i=>0, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>1, :resources=>11, :my_ants=>0, :opp_ants=>0},
+          {:i=>2, :resources=>11, :my_ants=>0, :opp_ants=>0},
+          {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>4, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>7, :resources=>29, :my_ants=>0, :opp_ants=>0},
+          {:i=>8, :resources=>29, :my_ants=>0, :opp_ants=>0},
+          {:i=>9, :resources=>85, :my_ants=>0, :opp_ants=>0},
+          {:i=>10, :resources=>85, :my_ants=>0, :opp_ants=>0},
+          {:i=>11, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>12, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>13, :resources=>12, :my_ants=>0, :opp_ants=>0},
+          {:i=>14, :resources=>12, :my_ants=>0, :opp_ants=>0},
+          {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>16, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>17, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>18, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>19, :resources=>31, :my_ants=>0, :opp_ants=>0},
+          {:i=>20, :resources=>31, :my_ants=>0, :opp_ants=>0},
+          {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>22, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>23, :resources=>230, :my_ants=>0, :opp_ants=>0},
+          {:i=>24, :resources=>230, :my_ants=>0, :opp_ants=>0},
+          {:i=>25, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>26, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>27, :resources=>280, :my_ants=>0, :opp_ants=>0},
+          {:i=>28, :resources=>280, :my_ants=>0, :opp_ants=>0},
+          {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>31, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>32, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>33, :resources=>85, :my_ants=>0, :opp_ants=>0},
+          {:i=>34, :resources=>85, :my_ants=>0, :opp_ants=>0},
+          {:i=>35, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>36, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>37, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>38, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          {:i=>39, :resources=>0, :my_ants=>10, :opp_ants=>0},
+          {:i=>40, :resources=>0, :my_ants=>0, :opp_ants=>10},
+        ]
+      end
+
+      it "inits in under a second and provides first command in under 100ms" do
+        seconds_to_boot = Benchmark.realtime { decider }
+        expect(seconds_to_boot).to be < 1
+
+        ms_to_decide = (Benchmark.realtime { decide_on } * 100).round
+        expect(ms_to_decide).to be < 100
+      end
+    end
   end
 end

@@ -14,7 +14,11 @@ number_of_cells.times do |i|
     resources: resources,
     neigh_0: neigh_0, neigh_1: neigh_1, neigh_2: neigh_2, neigh_3: neigh_3, neigh_4: neigh_4, neigh_5: neigh_5
   }
-  # debug cells[i]
+end
+
+cells.each_pair do |k, v|
+  next if k < 30
+  debug "#{k} => #{v},"
 end
 
 number_of_bases = gets.to_i
