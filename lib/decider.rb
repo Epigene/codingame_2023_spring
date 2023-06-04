@@ -226,40 +226,15 @@ class Decider
     end
     #======================
 
-    # if my_ants_total >= ant_count_cutoff
-    #   # GO FOR ALL MINERALS!
-    #   return
-    # end
+    if (my_ants_total >= ant_count_cutoff) || egg_cell_indices.none?
+      # GO FOR ALL MINERALS!
+      base = mineral_cell_indices.map do |i|
+        "LINE #{my_base_indices.first} #{i} 100"
+      end.join("; ")
 
-    # @return [Integer] ===
-    cell_being_harvested = mineral_cell_indices.find do |i|
-      cells[i][:my_ants] > 0 && cells[i][:resources] > 0
+      return "#{base}; MESSAGE yeehaw"
     end
-    debug "cell_being_harvested: #{cell_being_harvested}"
 
-    if cell_being_harvested
-      minerals_next_to_gathering = graph.neighbors_within(cell_being_harvested, 1) & mineral_cell_indices
-      base = StrengthDistributor.call(from: my_base_indices.first, to: cell_being_harvested, ants: my_ants_total, graph: graph)
-
-      if minerals_next_to_gathering.any?
-        bonus_portion = minerals_next_to_gathering.map { |i| "BEACON #{i} 1000" }.join("; ")
-        return "#{base}; #{bonus_portion}; MESSAGE Expanding on mineral gater"
-      else
-        return "#{base}; MESSAGE Continuing harvesting solitary #{cell_being_harvested}"
-      end
-    end
-    #======================
-
-    # @return [Cell hash]
-    debug "Best mining candidate: #{best_mining_candidate}"
-
-    if best_mining_candidate && cells[best_mining_candidate[:i]][:resources] > 0
-      # puts "LINE #{my_base_indices.first} #{best_mining_candidate[:i]} 1; MESSAGE Lining up towards #{best_mining_candidate[:i]}"
-      return "#{StrengthDistributor.call(from: my_base_indices.first, to: best_mining_candidate[:i], ants: my_ants_total, graph: graph)}; MESSAGE Lining up towards #{best_mining_candidate[:i]}"
-    end
-    #======================
-
-    # LINE <sourceIdx> <targetIdx> <strength> | BEACON <cellIdx> <strength> | MESSAGE <text>
     "WAIT; MESSAGE Nothing left to gather!"
   end
 

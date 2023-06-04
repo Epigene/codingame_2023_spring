@@ -177,7 +177,7 @@ RSpec.describe Decider, instance_name: :decider do
         end
 
         it "returns a decision to mine closest, best minerals" do
-          is_expected.to eq("BEACON 4 5000; BEACON 12 5000; MESSAGE Lining up towards 12")
+          is_expected.to eq("LINE 4 11 100; LINE 4 12 100; LINE 4 13 100; LINE 4 14 100; MESSAGE yeehaw")
         end
       end
 
@@ -264,7 +264,7 @@ RSpec.describe Decider, instance_name: :decider do
         end
 
         it "returns a decision to proceed with mining" do
-          is_expected.to eq("BEACON 4 5000; BEACON 14 5000; MESSAGE Lining up towards 14")
+          is_expected.to eq("LINE 4 11 100; LINE 4 13 100; LINE 4 14 100; MESSAGE yeehaw")
         end
       end
 
@@ -307,7 +307,7 @@ RSpec.describe Decider, instance_name: :decider do
 
         it "returns a decision to beacon the nearby mineral patches also" do
           is_expected.to eq(
-            "BEACON 4 5000; BEACON 12 5000; BEACON 14 1000; MESSAGE Expanding on mineral gater"
+            "LINE 4 11 100; LINE 4 12 100; LINE 4 13 100; LINE 4 14 100; MESSAGE yeehaw"
           )
         end
       end
@@ -502,7 +502,7 @@ RSpec.describe Decider, instance_name: :decider do
         end
 
         it "returns a decision to go for the closest eggs" do
-          is_expected.to eq("LINE 21 13 10; MESSAGE Jumping to collect contested eggs on 13")
+          is_expected.to eq("LINE 21 13 1; MESSAGE Egg next to base, yay")
         end
       end
 
@@ -829,6 +829,63 @@ RSpec.describe Decider, instance_name: :decider do
 
         it "returns command to just go for the eggs " do
           is_expected.to eq("LINE 40 42 1; MESSAGE Egg next to base, yay")
+        end
+      end
+
+      context "when I've got all my eggs and there are a bunch of minerals left to get" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>48, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>2, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>4, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>7},
+            {:i=>7, :resources=>280, :my_ants=>0, :opp_ants=>0},
+            {:i=>8, :resources=>280, :my_ants=>0, :opp_ants=>0},
+            {:i=>9, :resources=>10, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>0, :my_ants=>17, :opp_ants=>0},
+            {:i=>11, :resources=>210, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :resources=>174, :my_ants=>18, :opp_ants=>0},
+            {:i=>13, :resources=>0, :my_ants=>0, :opp_ants=>4},
+            {:i=>14, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :resources=>90, :my_ants=>0, :opp_ants=>0},
+            {:i=>18, :resources=>90, :my_ants=>0, :opp_ants=>0},
+            {:i=>19, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>5},
+            {:i=>22, :resources=>0, :my_ants=>12, :opp_ants=>0},
+            {:i=>23, :resources=>0, :my_ants=>0, :opp_ants=>2},
+            {:i=>24, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :resources=>239, :my_ants=>0, :opp_ants=>0},
+            {:i=>26, :resources=>187, :my_ants=>0, :opp_ants=>9},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>31, :resources=>0, :my_ants=>0, :opp_ants=>8},
+            {:i=>32, :resources=>0, :my_ants=>19, :opp_ants=>0},
+            {:i=>33, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>34, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>35, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>36, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>37, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>38, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>39, :resources=>0, :my_ants=>0, :opp_ants=>27},
+            {:i=>40, :resources=>0, :my_ants=>15, :opp_ants=>0},
+            {:i=>41, :resources=>0, :my_ants=>0, :opp_ants=>9},
+            {:i=>42, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a command to gather from everywhere" do
+          is_expected.to eq(
+            "LINE 40 0 100; LINE 40 7 100; LINE 40 8 100; LINE 40 11 100; LINE 40 12 100; LINE 40 17 100; LINE 40 18 100; LINE 40 25 100; LINE 40 26 100; " \
+            "MESSAGE yeehaw"
+          )
         end
       end
     end
