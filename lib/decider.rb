@@ -90,10 +90,9 @@ class Decider
 
     # manual debugging move
     # if true
-    #   puts "BEACON #{my_base_indices.first} 2; BEACON 2 8; MESSAGE Manual try"
     #   # BEACON index strength
     #   # LINE i1 i2 strength
-    #   next
+    #   return "LINE 9 2 100; MESSAGE Manual try"
     # end
 
     # @return [Array<Integer>] ======
