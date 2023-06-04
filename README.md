@@ -14,6 +14,10 @@ Code for bot that controls ants in bot-coding challenge.
 * Using a marker for cell "heat" based on how far it is from resources. Clusters of cells
   with resources would be extra desirable.
 
+## TODO
+1. Find a multi-base loss and replace `:distance_from_my_base` uses with `:closest_base` data
+2. seed=-3197346921395946000 detect aggression on my eggs and focus on efficiently collecting them through cell 5
+
 ## Use
 1. Place files in `lib/`, and require them in `lib/codinbot.rb` like you normally would.
 2. Write specs in `spec/`

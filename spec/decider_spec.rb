@@ -1167,6 +1167,58 @@ RSpec.describe Decider, instance_name: :decider do
           is_expected.to eq("BEACON 4 10; BEACON 10 10; MESSAGE Egg next to base, yay")
         end
       end
+
+      context "when I've just gathered my half of eggs and am ahead in workers" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :res=>0, :my_ants=>9, :opp_ants=>0},
+            {:i=>1, :res=>0, :my_ants=>0, :opp_ants=>14},
+            {:i=>2, :res=>0, :my_ants=>20, :opp_ants=>0},
+            {:i=>3, :res=>0, :my_ants=>0, :opp_ants=>26},
+            {:i=>4, :res=>0, :my_ants=>25, :opp_ants=>0},
+            {:i=>5, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :res=>23, :my_ants=>0, :opp_ants=>13},
+            {:i=>8, :res=>0, :my_ants=>22, :opp_ants=>0},
+            {:i=>9, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>13, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :res=>51, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :res=>51, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :res=>41, :my_ants=>0, :opp_ants=>0},
+            {:i=>18, :res=>41, :my_ants=>0, :opp_ants=>0},
+            {:i=>19, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>26, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>27, :res=>42, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :res=>42, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :res=>44, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :res=>44, :my_ants=>0, :opp_ants=>0},
+            {:i=>31, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>32, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>33, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>34, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>35, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>36, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>37, :res=>41, :my_ants=>0, :opp_ants=>0},
+            {:i=>38, :res=>41, :my_ants=>0, :opp_ants=>0},
+            {:i=>39, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>40, :res=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a command to camp opponent's one base while quietly gathering closest mineral on a trickle" do
+          is_expected.to eq("LINE 4 17 1; LINE 4 3 99; MESSAGE *scuffle*")
+        end
+      end
     end
   end
 end

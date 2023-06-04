@@ -204,7 +204,7 @@ class Decider
     # @return [cell hash] ===
     if my_ants_total < ant_count_cutoff
       eggs_closer_to_me = cells.slice(*egg_cell_indices).values.filter_map do |cell|
-        next if cell[:distance_from_my_base] >= cell[:distance_from_opp_base]
+        next if cell[:distance_from_my_base] > cell[:distance_from_opp_base]
         cell
       end.sort_by do |cell|
         [cell[:distance_from_my_base], -cell[:res]]
@@ -217,6 +217,13 @@ class Decider
       end
     end
     #======================
+
+    if @scuffle_activated || ((my_ants_total >= ant_count_cutoff) && opp_ants_total < my_ants_total && opp_base_indices.one? && cells[opp_base_indices.first][:distance_from_my_base] <= 2)
+      # GO FOR THE THROAT!
+      @scuffle_activated = true
+
+      return "LINE #{my_base_indices.first} #{best_mining_candidate[:i]} 1; LINE #{my_base_indices.first} #{opp_base_indices.first} 99; MESSAGE *scuffle*"
+    end
 
     if (my_ants_total >= ant_count_cutoff) || egg_cell_indices.none?
       # GO FOR ALL MINERALS!
