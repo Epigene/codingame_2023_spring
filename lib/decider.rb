@@ -54,25 +54,39 @@ class Decider
   def decide_on(cell_updates:)
     @nearby_minerals = nil
     @best_mining_candidate = nil # resetting memoisation from previous turns
+    @best_egg_candidate = nil
+    @opportunities = nil
     @my_ants_total = 0
+    @opp_ants_total = 0
     @my_ant_cell_indices = []
+    @my_cleared_egg_cells = []
+    @my_cleared_mineral_cells = []
 
     cell_update_ms = Benchmark.realtime do
       cell_updates.each do |cell_update|
-        next if cells[cell_update[:i]].nil?
+        next if (cell = cells[cell_update[:i]]).nil?
 
-        cells[cell_update[:i]].merge!(cell_update)
+        cell.merge!(cell_update)
         @my_ants_total += cell_update[:my_ants]
+        @opp_ants_total += cell_update[:opp_ants]
         my_ant_cell_indices << cell_update[:i] if cell_update[:my_ants].positive?
 
         if cell_update[:resources].zero?
+          if cell[:type] == EGG && egg_cell_indices.include?(cell[:i]) && cell[:my_ants].positive?
+            @my_cleared_egg_cells << cell[:i]
+          end
+
+          if cell[:type] == CRYSTAL && mineral_cell_indices.include?(cell[:i]) && cell[:my_ants].positive?
+            @my_cleared_mineral_cells << cell[:i]
+          end
+
           egg_cell_indices.delete(cell_update[:i])
           mineral_cell_indices.delete(cell_update[:i])
         end
         # debug "#{i}: #{cells[i]}" if cells[i][:resources] > 0
       end
     end * 100
-    debug "Cell update took #{cell_update_ms.round}"
+    # debug "Cell update took #{cell_update_ms.round}"
 
     # manual debugging move
     # if true
@@ -82,7 +96,64 @@ class Decider
     #   next
     # end
 
-    # @return [Integer] ==
+    # @return [Array<Integer>] ======
+    if my_ants_total < ant_count_cutoff
+      eggs_within_1_of_base = egg_cell_indices.select do |i|
+        cells[i][:distance_from_my_base] == 1
+      end
+
+      if eggs_within_1_of_base.any?
+        if eggs_within_1_of_base.one?
+          cell = cells[eggs_within_1_of_base.first]
+          expected_gathered_eggs = [cell[:resources], cell[:my_ants]].min
+
+          if (_will_overmine = expected_gathered_eggs < cell[:my_ants])
+            # gotta look for next egg or mineral target
+
+            if expected_gathered_eggs + my_ants_total >= ant_count_cutoff
+              # go for minerals
+              return "LINE #{my_base_indices.first} #{eggs_within_1_of_base.first} 1; LINE #{my_base_indices.first} #{best_mining_candidate} 1; MESSAGE finishing egg gather and crossfading to mineral gather"
+            else
+              # still eggs to gather
+              base = "BEACON #{eggs_within_1_of_base.first} 9; LINE #{my_base_indices.first} #{best_egg_candidate(except: [eggs_within_1_of_base.first])} 10"
+
+              if my_ants_total > opp_ants_total
+                opportunity_part = opportunities.map do |i|
+                  "LINE #{my_base_indices.first} #{i} 10"
+                end.join("; ")
+
+                return "#{base}; #{opportunity_part}; MESSAGE opportune crossfading eggs to further egg gather".gsub("; ; ", "; ")
+              else
+                return "#{base}; MESSAGE crossfading eggs to further egg gather"
+              end
+            end
+          end
+        else
+          base = eggs_within_1_of_base.map do |i|
+            "LINE #{my_base_indices.first} #{i} 1"
+          end.join("; ")
+
+          return "#{base}; MESSAGE Eggs next to base, yay"
+        end
+      end
+    end
+    #======================
+
+    # @return [Array<Integer>] ======
+    # eggs_within_2_of_base = egg_cell_indices.select do |i|
+    #   cells[i][:distance_from_my_base] == 2
+    # end
+
+    # if eggs_within_2_of_base.any?
+    #   base = eggs_within_2_of_base.map do |i|
+    #     "LINE #{my_base_indices.first} #{i} 1"
+    #   end
+
+    #   return "#{base}; MESSAGE Eggs almost next to base, yay?"
+    # end
+    #======================
+
+    # @return [Integer] ===================================
     eggs_being_gathered = egg_cell_indices.find do |i|
       cells[i][:my_ants] > 0 && cells[i][:resources] > 0
     end
@@ -126,7 +197,12 @@ class Decider
       debug "eggs_in_contested_ground: #{eggs_in_contested_ground}"
 
       if eggs_in_contested_ground && cells[eggs_in_contested_ground[:i]][:resources] > 0
-        return "#{StrengthDistributor.call(from: my_base_indices.first, to: eggs_in_contested_ground[:i], ants: my_ants_total, graph: graph)}; MESSAGE Jumping to collect contested eggs on #{eggs_in_contested_ground[:i]}"
+        yeah = opportunities_and_ongoing.map do |i|
+          "LINE #{my_base_indices.first} #{i} 5"
+        end.join("; ")
+
+        # return "#{StrengthDistributor.call(from: my_base_indices.first, to: eggs_in_contested_ground[:i], ants: my_ants_total, graph: graph)}; MESSAGE Jumping to collect contested eggs on #{eggs_in_contested_ground[:i]}"
+        return "LINE #{my_base_indices.first} #{eggs_in_contested_ground[:i]} 10; #{yeah}; MESSAGE Jumping to collect contested eggs on #{eggs_in_contested_ground[:i]}".gsub("; ; ", "; ")
       end
     end
     #======================
@@ -183,7 +259,45 @@ class Decider
   private
 
   attr_reader :cells, :graph, :number_of_bases, :my_base_indices, :opp_base_indices,
-    :eggs_at_start_of_game, :my_ant_cell_indices, :my_ants_total
+    :eggs_at_start_of_game, :my_ant_cell_indices,
+    :my_cleared_egg_cells, :my_cleared_mineral_cells,
+    :my_ants_total, :opp_ants_total
+
+  # mineral cells next to just mined out eggs
+  def opportunities
+    return @opportunities if @opportunities
+
+    @opportunities = Set.new
+
+    my_cleared_egg_cells.each do |i|
+      @opportunities += graph.neighbors_within(i, 1)
+    end
+
+    my_cleared_mineral_cells.each do |i|
+      @opportunities += graph.neighbors_within(i, 1)
+    end
+
+    @opportunities &= mineral_cell_indices
+  end
+
+  def opportunities_and_ongoing
+    opportunities + cells.slice(*mineral_cell_indices).filter_map do |k, c|
+      next unless c[:my_ants].positive?
+      c[:i]
+    end
+  end
+
+  # @return [Integer, nil]
+  def best_egg_candidate(except: [])
+    eggs_closer_to_me = cells.slice(*egg_cell_indices - except).values.filter_map do |cell|
+      next if cell[:distance_from_my_base] >= cell[:distance_from_opp_base]
+      cell
+    end.sort_by do |cell|
+      [cell[:distance_from_my_base], -cell[:resources]]
+    end&.first
+
+    eggs_closer_to_me&.[](:i)
+  end
 
   # @return [Hash cell]
   def best_mining_candidate

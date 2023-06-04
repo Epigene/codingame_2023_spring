@@ -220,7 +220,7 @@ RSpec.describe Decider, instance_name: :decider do
 
         it "returns a decision to shift part of the focus to mining" do
           is_expected.to eq(
-            "BEACON 4 2453; BEACON 2 2453; BEACON 8 2453; BEACON 18 2642; BEACON 12 1000; BEACON 14 1000; " \
+            "BEACON 4 2453; BEACON 2 2453; BEACON 8 2453; BEACON 18 2642; BEACON 12 2000; BEACON 14 2000; " \
             "MESSAGE Finishing egg gathering and expanding to nearby minerals"
           )
         end
@@ -502,7 +502,7 @@ RSpec.describe Decider, instance_name: :decider do
         end
 
         it "returns a decision to go for the closest eggs" do
-          is_expected.to eq("BEACON 21 5000; BEACON 13 5000; MESSAGE Jumping to collect contested eggs on 13")
+          is_expected.to eq("LINE 21 13 10; MESSAGE Jumping to collect contested eggs on 13")
         end
       end
 
@@ -544,7 +544,184 @@ RSpec.describe Decider, instance_name: :decider do
         end
 
         it "returns a decision to go for the mineral patch next to ants" do
-          is_expected.to eq("BEACON 21 3333; BEACON 4 3333; BEACON 6 3333; BEACON 18 1000; MESSAGE Finishing egg gathering and expanding to nearby minerals")
+          is_expected.to eq(
+            "BEACON 21 3333; BEACON 4 3333; BEACON 6 3333; BEACON 18 2000; MESSAGE Finishing egg gathering and expanding to nearby minerals"
+          )
+        end
+      end
+    end
+
+    context "when seed=7220350571314814000 with two eggs next to base" do
+      let(:cells) do
+        {
+          0 => {:i=>0, :type=>0, :resources=>0, :neigh_0=>1, :neigh_1=>3, :neigh_2=>-1, :neigh_3=>2, :neigh_4=>4, :neigh_5=>-1},
+          1 => {:i=>1, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>5, :neigh_2=>3, :neigh_3=>0, :neigh_4=>-1, :neigh_5=>14},
+          2 => {:i=>2, :type=>0, :resources=>0, :neigh_0=>0, :neigh_1=>-1, :neigh_2=>13, :neigh_3=>-1, :neigh_4=>6, :neigh_5=>4},
+          3 => {:i=>3, :type=>0, :resources=>0, :neigh_0=>5, :neigh_1=>7, :neigh_2=>9, :neigh_3=>-1, :neigh_4=>0, :neigh_5=>1},
+          4 => {:i=>4, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>0, :neigh_2=>2, :neigh_3=>6, :neigh_4=>8, :neigh_5=>10},
+          5 => {:i=>5, :type=>0, :resources=>0, :neigh_0=>17, :neigh_1=>19, :neigh_2=>7, :neigh_3=>3, :neigh_4=>1, :neigh_5=>-1},
+          6 => {:i=>6, :type=>0, :resources=>0, :neigh_0=>4, :neigh_1=>2, :neigh_2=>-1, :neigh_3=>18, :neigh_4=>20, :neigh_5=>8},
+          7 => {:i=>7, :type=>2, :resources=>245, :neigh_0=>19, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>9, :neigh_4=>3, :neigh_5=>5},
+          8 => {:i=>8, :type=>2, :resources=>245, :neigh_0=>10, :neigh_1=>4, :neigh_2=>6, :neigh_3=>20, :neigh_4=>-1, :neigh_5=>-1},
+          9 => {:i=>9, :type=>0, :resources=>0, :neigh_0=>7, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>11, :neigh_4=>-1, :neigh_5=>3},
+          10 => {:i=>10, :type=>0, :resources=>0, :neigh_0=>12, :neigh_1=>-1, :neigh_2=>4, :neigh_3=>8, :neigh_4=>-1, :neigh_5=>-1},
+          11 => {:i=>11, :type=>0, :resources=>0, :neigh_0=>9, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>13, :neigh_5=>-1},
+          12 => {:i=>12, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>14, :neigh_2=>-1, :neigh_3=>10, :neigh_4=>-1, :neigh_5=>-1},
+          13 => {:i=>13, :type=>1, :resources=>18, :neigh_0=>-1, :neigh_1=>11, :neigh_2=>-1, :neigh_3=>21, :neigh_4=>-1, :neigh_5=>2},
+          14 => {:i=>14, :type=>1, :resources=>18, :neigh_0=>22, :neigh_1=>-1, :neigh_2=>1, :neigh_3=>-1, :neigh_4=>12, :neigh_5=>-1},
+          15 => {:i=>15, :type=>1, :resources=>19, :neigh_0=>23, :neigh_1=>25, :neigh_2=>17, :neigh_3=>-1, :neigh_4=>22, :neigh_5=>32},
+          16 => {:i=>16, :type=>1, :resources=>19, :neigh_0=>-1, :neigh_1=>21, :neigh_2=>31, :neigh_3=>24, :neigh_4=>26, :neigh_5=>18},
+          17 => {:i=>17, :type=>0, :resources=>0, :neigh_0=>25, :neigh_1=>27, :neigh_2=>19, :neigh_3=>5, :neigh_4=>-1, :neigh_5=>15},
+          18 => {:i=>18, :type=>0, :resources=>0, :neigh_0=>6, :neigh_1=>-1, :neigh_2=>16, :neigh_3=>26, :neigh_4=>28, :neigh_5=>20},
+          19 => {:i=>19, :type=>1, :resources=>17, :neigh_0=>27, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>7, :neigh_4=>5, :neigh_5=>17},
+          20 => {:i=>20, :type=>1, :resources=>17, :neigh_0=>8, :neigh_1=>6, :neigh_2=>18, :neigh_3=>28, :neigh_4=>-1, :neigh_5=>-1},
+          21 => {:i=>21, :type=>0, :resources=>0, :neigh_0=>13, :neigh_1=>-1, :neigh_2=>29, :neigh_3=>31, :neigh_4=>16, :neigh_5=>-1},
+          22 => {:i=>22, :type=>0, :resources=>0, :neigh_0=>32, :neigh_1=>15, :neigh_2=>-1, :neigh_3=>14, :neigh_4=>-1, :neigh_5=>30},
+          23 => {:i=>23, :type=>2, :resources=>260, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>25, :neigh_3=>15, :neigh_4=>32, :neigh_5=>-1},
+          24 => {:i=>24, :type=>2, :resources=>260, :neigh_0=>16, :neigh_1=>31, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>26},
+          25 => {:i=>25, :type=>1, :resources=>27, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>27, :neigh_3=>17, :neigh_4=>15, :neigh_5=>23},
+          26 => {:i=>26, :type=>1, :resources=>27, :neigh_0=>18, :neigh_1=>16, :neigh_2=>24, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>28},
+          27 => {:i=>27, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>19, :neigh_4=>17, :neigh_5=>25},
+          28 => {:i=>28, :type=>0, :resources=>0, :neigh_0=>20, :neigh_1=>18, :neigh_2=>26, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>-1},
+          29 => {:i=>29, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>31, :neigh_5=>21},
+          30 => {:i=>30, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>32, :neigh_2=>22, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>-1},
+          31 => {:i=>31, :type=>0, :resources=>0, :neigh_0=>21, :neigh_1=>29, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>24, :neigh_5=>16},
+          32 => {:i=>32, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>23, :neigh_2=>15, :neigh_3=>22, :neigh_4=>30, :neigh_5=>-1},
+        }
+      end
+
+      let(:my_base_indices) { [18] }
+      let(:opp_base_indices) { [17] }
+
+      context "when there's a cluster of eggs next to base" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>2, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>4, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :resources=>245, :my_ants=>0, :opp_ants=>0},
+            {:i=>8, :resources=>245, :my_ants=>0, :opp_ants=>0},
+            {:i=>9, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>13, :resources=>18, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :resources=>18, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>19, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :resources=>19, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :resources=>0, :my_ants=>0, :opp_ants=>10},
+            {:i=>18, :resources=>0, :my_ants=>10, :opp_ants=>0},
+            {:i=>19, :resources=>17, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :resources=>17, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :resources=>260, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :resources=>260, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :resources=>27, :my_ants=>0, :opp_ants=>0},
+            {:i=>26, :resources=>27, :my_ants=>0, :opp_ants=>0},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>31, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>32, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a command to efficiently gather those" do
+          is_expected.to eq("LINE 18 16 1; LINE 18 20 1; LINE 18 26 1; MESSAGE Eggs next to base, yay")
+        end
+      end
+
+      context "when eggs next to base are mining out" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>2, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>4, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :resources=>245, :my_ants=>0, :opp_ants=>0},
+            {:i=>8, :resources=>245, :my_ants=>0, :opp_ants=>0},
+            {:i=>9, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>13, :resources=>18, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :resources=>18, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>5},
+            {:i=>16, :resources=>0, :my_ants=>13, :opp_ants=>0},
+            {:i=>17, :resources=>0, :my_ants=>0, :opp_ants=>16},
+            {:i=>18, :resources=>0, :my_ants=>34, :opp_ants=>0},
+            {:i=>19, :resources=>7, :my_ants=>0, :opp_ants=>14},
+            {:i=>20, :resources=>0, :my_ants=>12, :opp_ants=>0},
+            {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :resources=>260, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :resources=>260, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :resources=>22, :my_ants=>0, :opp_ants=>9},
+            {:i=>26, :resources=>2, :my_ants=>12, :opp_ants=>0},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>31, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>32, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a command to expand to nearby crystals while grapsing for contested eggs" do
+          is_expected.to eq("BEACON 26 9; LINE 18 13 10; LINE 18 8 10; LINE 18 24 10; MESSAGE opportune crossfading eggs to further egg gather")
+        end
+      end
+
+      context "when we've opportunistically expanded to minerals, but the main focus should remain eggs" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>2, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>4, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>19, :opp_ants=>0},
+            {:i=>7, :resources=>245, :my_ants=>0, :opp_ants=>0},
+            {:i=>8, :resources=>236, :my_ants=>9, :opp_ants=>0},
+            {:i=>9, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>13, :resources=>18, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :resources=>18, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :resources=>0, :my_ants=>16, :opp_ants=>0},
+            {:i=>17, :resources=>0, :my_ants=>0, :opp_ants=>35},
+            {:i=>18, :resources=>0, :my_ants=>12, :opp_ants=>0},
+            {:i=>19, :resources=>0, :my_ants=>0, :opp_ants=>11},
+            {:i=>20, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :resources=>260, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :resources=>252, :my_ants=>8, :opp_ants=>0},
+            {:i=>25, :resources=>8, :my_ants=>0, :opp_ants=>19},
+            {:i=>26, :resources=>0, :my_ants=>9, :opp_ants=>0},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>31, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>32, :resources=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a command to line to eggs AND preserve a minimal effort at minerals also" do
+          is_expected.to eq("LINE 18 13 10; LINE 18 24 5; LINE 18 8 5; MESSAGE Jumping to collect contested eggs on 13")
         end
       end
     end
