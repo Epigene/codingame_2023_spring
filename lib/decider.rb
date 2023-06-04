@@ -43,24 +43,33 @@ class Decider
           0
         end
     end
+
+    egg_cell_indices
+    mineral_cell_indices
+    path_between_bases # inits path
+    contested_cell_indices# inits contested ground
+    nearby_cell_indices
   end
 
   def decide_on(cell_updates:)
     @best_mining_candidate = nil # resetting memoisation from previous turns
     my_ants_total = 0
 
-    cell_updates.each do |cell_update|
-      next if cells[cell_update[:i]].nil?
+    cell_update_ms = Benchmark.realtime do
+      cell_updates.each do |cell_update|
+        next if cells[cell_update[:i]].nil?
 
-      cells[cell_update[:i]].merge!(cell_update)
-      my_ants_total += cell_update[:my_ants]
+        cells[cell_update[:i]].merge!(cell_update)
+        my_ants_total += cell_update[:my_ants]
 
-      if cell_update[:resources].zero?
-        egg_cell_indices.delete(cell_update[:i])
-        mineral_cell_indices.delete(cell_update[:i])
+        if cell_update[:resources].zero?
+          egg_cell_indices.delete(cell_update[:i])
+          mineral_cell_indices.delete(cell_update[:i])
+        end
+        # debug "#{i}: #{cells[i]}" if cells[i][:resources] > 0
       end
-      # debug "#{i}: #{cells[i]}" if cells[i][:resources] > 0
-    end
+    end * 100
+    debug "Cell update took #{cell_update_ms.round}"
 
     # manual debugging move
     # if true
@@ -184,20 +193,30 @@ class Decider
   end
 
   def path_between_bases
+    return @path_between_bases if defined?(@path_between_bases)
+
     debug "Path between bases: #{my_base_indices.first} and #{opp_base_indices.first}"
-    @path_between_bases ||= graph.dijkstra_shortest_path(my_base_indices.first, opp_base_indices.first)
+    @path_between_bases = graph.dijkstra_shortest_path(my_base_indices.first, opp_base_indices.first)
     debug "  #{@path_between_bases}"
     @path_between_bases
   end
 
+  # @return [Integer]
   def cells_between_bases
     @cells_between_bases ||= path_between_bases[1..-2].size
   end
 
   def contested_cell_indices
+    return @contested_cell_indices if defined?(@contested_cell_indices)
+
     @contested_cell_indices ||=
-      graph.neighbors_within(my_base_indices.first, cells_between_bases) &
-      graph.neighbors_within(opp_base_indices.first, cells_between_bases)
+      if cells_between_bases > 6
+        debug "Bases too far apart, using simplified contested ground"
+        path_between_bases[1..-2].to_set
+      else
+        graph.neighbors_within(my_base_indices.first, cells_between_bases) &
+          graph.neighbors_within(opp_base_indices.first, cells_between_bases)
+      end
 
     debug "Contested cells are: #{@contested_cell_indices}"
 
@@ -205,7 +224,11 @@ class Decider
   end
 
   def nearby_cell_indices
-    @nearby_cell_indices ||= graph.neighbors_within(my_base_indices.first, cells_between_bases)
+    return @nearby_cell_indices if defined?(@nearby_cell_indices)
+
+    max_distance_to_check = [cells_between_bases, 6].min
+
+    @nearby_cell_indices = graph.neighbors_within(my_base_indices.first, max_distance_to_check)
     debug "Nearby cells are: #{@nearby_cell_indices}"
     @nearby_cell_indices
   end
