@@ -103,6 +103,10 @@ class Decider
       end
 
       if eggs_within_1_of_base.any?
+        base = eggs_within_1_of_base.map do |i|
+          "LINE #{my_base_indices.first} #{i} 1"
+        end.join("; ")
+
         if eggs_within_1_of_base.one?
           cell = cells[eggs_within_1_of_base.first]
           expected_gathered_eggs = [cell[:resources], cell[:my_ants]].min
@@ -127,12 +131,10 @@ class Decider
                 return "#{base}; MESSAGE crossfading eggs to further egg gather"
               end
             end
+          else
+            return "#{base}; MESSAGE Egg next to base, yay"
           end
         else
-          base = eggs_within_1_of_base.map do |i|
-            "LINE #{my_base_indices.first} #{i} 1"
-          end.join("; ")
-
           return "#{base}; MESSAGE Eggs next to base, yay"
         end
       end
@@ -223,6 +225,11 @@ class Decider
       end
     end
     #======================
+
+    # if my_ants_total >= ant_count_cutoff
+    #   # GO FOR ALL MINERALS!
+    #   return
+    # end
 
     # @return [Integer] ===
     cell_being_harvested = mineral_cell_indices.find do |i|

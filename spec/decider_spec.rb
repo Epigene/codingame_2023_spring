@@ -725,5 +725,112 @@ RSpec.describe Decider, instance_name: :decider do
         end
       end
     end
+
+    context "when seed= with bases far apart and there being atari" do
+      let(:cells) do
+        {
+          0 => {:i=>0, :type=>2, :resources=>48, :neigh_0=>1, :neigh_1=>3, :neigh_2=>-1, :neigh_3=>2, :neigh_4=>4, :neigh_5=>-1},
+          1 => {:i=>1, :type=>0, :resources=>0, :neigh_0=>5, :neigh_1=>-1, :neigh_2=>3, :neigh_3=>0, :neigh_4=>-1, :neigh_5=>14},
+          2 => {:i=>2, :type=>0, :resources=>0, :neigh_0=>0, :neigh_1=>-1, :neigh_2=>13, :neigh_3=>6, :neigh_4=>-1, :neigh_5=>4},
+          3 => {:i=>3, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>7, :neigh_2=>9, :neigh_3=>-1, :neigh_4=>0, :neigh_5=>1},
+          4 => {:i=>4, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>0, :neigh_2=>2, :neigh_3=>-1, :neigh_4=>8, :neigh_5=>10},
+          5 => {:i=>5, :type=>0, :resources=>0, :neigh_0=>15, :neigh_1=>17, :neigh_2=>-1, :neigh_3=>1, :neigh_4=>14, :neigh_5=>24},
+          6 => {:i=>6, :type=>0, :resources=>0, :neigh_0=>2, :neigh_1=>13, :neigh_2=>23, :neigh_3=>16, :neigh_4=>18, :neigh_5=>-1},
+          7 => {:i=>7, :type=>2, :resources=>280, :neigh_0=>19, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>9, :neigh_4=>3, :neigh_5=>-1},
+          8 => {:i=>8, :type=>2, :resources=>280, :neigh_0=>10, :neigh_1=>4, :neigh_2=>-1, :neigh_3=>20, :neigh_4=>-1, :neigh_5=>-1},
+          9 => {:i=>9, :type=>1, :resources=>10, :neigh_0=>7, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>11, :neigh_4=>-1, :neigh_5=>3},
+          10 => {:i=>10, :type=>1, :resources=>10, :neigh_0=>12, :neigh_1=>-1, :neigh_2=>4, :neigh_3=>8, :neigh_4=>-1, :neigh_5=>-1},
+          11 => {:i=>11, :type=>2, :resources=>210, :neigh_0=>9, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>21, :neigh_4=>13, :neigh_5=>-1},
+          12 => {:i=>12, :type=>2, :resources=>210, :neigh_0=>22, :neigh_1=>14, :neigh_2=>-1, :neigh_3=>10, :neigh_4=>-1, :neigh_5=>-1},
+          13 => {:i=>13, :type=>1, :resources=>12, :neigh_0=>-1, :neigh_1=>11, :neigh_2=>21, :neigh_3=>23, :neigh_4=>6, :neigh_5=>2},
+          14 => {:i=>14, :type=>1, :resources=>12, :neigh_0=>24, :neigh_1=>5, :neigh_2=>1, :neigh_3=>-1, :neigh_4=>12, :neigh_5=>22},
+          15 => {:i=>15, :type=>0, :resources=>0, :neigh_0=>25, :neigh_1=>27, :neigh_2=>17, :neigh_3=>5, :neigh_4=>24, :neigh_5=>-1},
+          16 => {:i=>16, :type=>0, :resources=>0, :neigh_0=>6, :neigh_1=>23, :neigh_2=>-1, :neigh_3=>26, :neigh_4=>28, :neigh_5=>18},
+          17 => {:i=>17, :type=>2, :resources=>90, :neigh_0=>27, :neigh_1=>29, :neigh_2=>19, :neigh_3=>-1, :neigh_4=>5, :neigh_5=>15},
+          18 => {:i=>18, :type=>2, :resources=>90, :neigh_0=>-1, :neigh_1=>6, :neigh_2=>16, :neigh_3=>28, :neigh_4=>30, :neigh_5=>20},
+          19 => {:i=>19, :type=>0, :resources=>0, :neigh_0=>29, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>7, :neigh_4=>-1, :neigh_5=>17},
+          20 => {:i=>20, :type=>0, :resources=>0, :neigh_0=>8, :neigh_1=>-1, :neigh_2=>18, :neigh_3=>30, :neigh_4=>-1, :neigh_5=>-1},
+          21 => {:i=>21, :type=>1, :resources=>39, :neigh_0=>11, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>31, :neigh_4=>23, :neigh_5=>13},
+          22 => {:i=>22, :type=>1, :resources=>39, :neigh_0=>32, :neigh_1=>24, :neigh_2=>14, :neigh_3=>12, :neigh_4=>-1, :neigh_5=>-1},
+          23 => {:i=>23, :type=>0, :resources=>0, :neigh_0=>13, :neigh_1=>21, :neigh_2=>31, :neigh_3=>-1, :neigh_4=>16, :neigh_5=>6},
+          24 => {:i=>24, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>15, :neigh_2=>5, :neigh_3=>14, :neigh_4=>22, :neigh_5=>32},
+          25 => {:i=>25, :type=>2, :resources=>245, :neigh_0=>33, :neigh_1=>35, :neigh_2=>27, :neigh_3=>15, :neigh_4=>-1, :neigh_5=>42},
+          26 => {:i=>26, :type=>2, :resources=>245, :neigh_0=>16, :neigh_1=>-1, :neigh_2=>41, :neigh_3=>34, :neigh_4=>36, :neigh_5=>28},
+          27 => {:i=>27, :type=>0, :resources=>0, :neigh_0=>35, :neigh_1=>37, :neigh_2=>29, :neigh_3=>17, :neigh_4=>15, :neigh_5=>25},
+          28 => {:i=>28, :type=>0, :resources=>0, :neigh_0=>18, :neigh_1=>16, :neigh_2=>26, :neigh_3=>36, :neigh_4=>38, :neigh_5=>30},
+          29 => {:i=>29, :type=>0, :resources=>0, :neigh_0=>37, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>19, :neigh_4=>17, :neigh_5=>27},
+          30 => {:i=>30, :type=>0, :resources=>0, :neigh_0=>20, :neigh_1=>18, :neigh_2=>28, :neigh_3=>38, :neigh_4=>-1, :neigh_5=>-1},
+          31 => {:i=>31, :type=>0, :resources=>0, :neigh_0=>21, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>39, :neigh_4=>-1, :neigh_5=>23},
+          32 => {:i=>32, :type=>0, :resources=>0, :neigh_0=>40, :neigh_1=>-1, :neigh_2=>24, :neigh_3=>22, :neigh_4=>-1, :neigh_5=>-1},
+          33 => {:i=>33, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>35, :neigh_3=>25, :neigh_4=>42, :neigh_5=>-1},
+          34 => {:i=>34, :type=>0, :resources=>0, :neigh_0=>26, :neigh_1=>41, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>36},
+          35 => {:i=>35, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>37, :neigh_3=>27, :neigh_4=>25, :neigh_5=>33},
+          36 => {:i=>36, :type=>0, :resources=>0, :neigh_0=>28, :neigh_1=>26, :neigh_2=>34, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>38},
+          37 => {:i=>37, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>29, :neigh_4=>27, :neigh_5=>35},
+          38 => {:i=>38, :type=>0, :resources=>0, :neigh_0=>30, :neigh_1=>28, :neigh_2=>36, :neigh_3=>-1, :neigh_4=>-1, :neigh_5=>-1},
+          39 => {:i=>39, :type=>0, :resources=>0, :neigh_0=>31, :neigh_1=>-1, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>41, :neigh_5=>-1},
+          40 => {:i=>40, :type=>0, :resources=>0, :neigh_0=>-1, :neigh_1=>42, :neigh_2=>-1, :neigh_3=>32, :neigh_4=>-1, :neigh_5=>-1},
+          41 => {:i=>41, :type=>1, :resources=>10, :neigh_0=>-1, :neigh_1=>39, :neigh_2=>-1, :neigh_3=>-1, :neigh_4=>34, :neigh_5=>26},
+          42 => {:i=>42, :type=>1, :resources=>10, :neigh_0=>-1, :neigh_1=>33, :neigh_2=>25, :neigh_3=>-1, :neigh_4=>40, :neigh_5=>-1},
+        }
+      end
+
+      let(:my_base_indices) { [40] }
+      let(:opp_base_indices) { [39] }
+
+      context "when it's the first move and there are egss next to base" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :resources=>48, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>2, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>3, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>4, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>5, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :resources=>280, :my_ants=>0, :opp_ants=>0},
+            {:i=>8, :resources=>280, :my_ants=>0, :opp_ants=>0},
+            {:i=>9, :resources=>10, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :resources=>10, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :resources=>210, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :resources=>210, :my_ants=>0, :opp_ants=>0},
+            {:i=>13, :resources=>12, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :resources=>12, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :resources=>90, :my_ants=>0, :opp_ants=>0},
+            {:i=>18, :resources=>90, :my_ants=>0, :opp_ants=>0},
+            {:i=>19, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :resources=>39, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :resources=>39, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :resources=>245, :my_ants=>0, :opp_ants=>0},
+            {:i=>26, :resources=>245, :my_ants=>0, :opp_ants=>0},
+            {:i=>27, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>31, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>32, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>33, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>34, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>35, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>36, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>37, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>38, :resources=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>39, :resources=>0, :my_ants=>0, :opp_ants=>10},
+            {:i=>40, :resources=>0, :my_ants=>10, :opp_ants=>0},
+            {:i=>41, :resources=>10, :my_ants=>0, :opp_ants=>0},
+            {:i=>42, :resources=>10, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns command to just go for the eggs " do
+          is_expected.to eq("LINE 40 42 1; MESSAGE Egg next to base, yay")
+        end
+      end
+    end
   end
 end
