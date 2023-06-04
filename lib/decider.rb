@@ -13,11 +13,11 @@ class Decider
     @eggs_at_start_of_game = 0
 
     @cells.each do |i, data|
-      @eggs_at_start_of_game += data[:resources] if data[:type] == EGG
+      @eggs_at_start_of_game += data[:res] if data[:type] == EGG
 
       @graph.ensure_bidirectional_connections!(
         root: i,
-        connections: data.slice(:neigh_0, :neigh_1, :neigh_2, :neigh_3, :neigh_4, :neigh_5).values.reject { |n| n.negative? }
+        connections: data.slice(:ne_0, :ne_1, :ne_2, :ne_3, :ne_4, :ne_5).values.reject { |n| n.negative? }
       )
       # debug "Node #{i} graph: #{graph[i]}"
     end
@@ -71,7 +71,7 @@ class Decider
         @opp_ants_total += cell_update[:opp_ants]
         my_ant_cell_indices << cell_update[:i] if cell_update[:my_ants].positive?
 
-        if cell_update[:resources].zero?
+        if cell_update[:res].zero?
           if cell[:type] == EGG && egg_cell_indices.include?(cell[:i]) && cell[:my_ants].positive?
             @my_cleared_egg_cells << cell[:i]
           end
@@ -83,7 +83,7 @@ class Decider
           egg_cell_indices.delete(cell_update[:i])
           mineral_cell_indices.delete(cell_update[:i])
         end
-        # debug "#{i}: #{cells[i]}" if cells[i][:resources] > 0
+        # debug "#{i}: #{cells[i]}" if cells[i][:res] > 0
       end
     end * 100
     # debug "Cell update took #{cell_update_ms.round}"
@@ -109,7 +109,7 @@ class Decider
 
         if eggs_within_1_of_base.one?
           cell = cells[eggs_within_1_of_base.first]
-          expected_gathered_eggs = [cell[:resources], cell[:my_ants]].min
+          expected_gathered_eggs = [cell[:res], cell[:my_ants]].min
 
           if (_will_overmine = expected_gathered_eggs < cell[:my_ants])
             # gotta look for next egg or mineral target
@@ -157,7 +157,7 @@ class Decider
 
     # @return [Integer] ===================================
     eggs_being_gathered = egg_cell_indices.find do |i|
-      cells[i][:my_ants] > 0 && cells[i][:resources] > 0
+      cells[i][:my_ants] > 0 && cells[i][:res] > 0
     end
     debug "eggs_being_gathered: #{eggs_being_gathered}"
 
@@ -172,7 +172,7 @@ class Decider
         return "#{base}; #{expansion_portion}; MESSAGE Expanding on egg gathering"
       else
         cell = cells[eggs_being_gathered]
-        expected_gathered_eggs = [cell[:resources], cell[:my_ants]].min
+        expected_gathered_eggs = [cell[:res], cell[:my_ants]].min
 
         if expected_gathered_eggs + my_ants_total >= ant_count_cutoff
           if nearby_minerals.any?
@@ -194,11 +194,11 @@ class Decider
     # @return [Cell hash] =
     if my_ants_total < ant_count_cutoff
       eggs_in_contested_ground = cells.slice(*(contested_cell_indices & egg_cell_indices)).values.min_by do |cell|
-        [cell[:distance_from_my_base], -cell[:resources]]
+        [cell[:distance_from_my_base], -cell[:res]]
       end
       debug "eggs_in_contested_ground: #{eggs_in_contested_ground}"
 
-      if eggs_in_contested_ground && cells[eggs_in_contested_ground[:i]][:resources] > 0
+      if eggs_in_contested_ground && cells[eggs_in_contested_ground[:i]][:res] > 0
         yeah = opportunities_and_ongoing.map do |i|
           "LINE #{my_base_indices.first} #{i} 5"
         end.join("; ")
@@ -215,11 +215,11 @@ class Decider
         next if cell[:distance_from_my_base] >= cell[:distance_from_opp_base]
         cell
       end.sort_by do |cell|
-        [cell[:distance_from_my_base], -cell[:resources]]
+        [cell[:distance_from_my_base], -cell[:res]]
       end&.first
       debug "eggs_closer_to_me: #{eggs_closer_to_me}"
 
-      if eggs_closer_to_me && cells[eggs_closer_to_me[:i]][:resources] > 0
+      if eggs_closer_to_me && cells[eggs_closer_to_me[:i]][:res] > 0
         # puts "LINE #{my_base_indices.first} #{eggs_closer_to_me[:i]} 1; MESSAGE uncontested eggs on #{eggs_closer_to_me[:i]}"
         return "#{StrengthDistributor.call(from: my_base_indices.first, to: eggs_closer_to_me[:i], ants: my_ants_total, graph: graph)}; MESSAGE close eggs on #{eggs_closer_to_me[:i]}"
       end
@@ -275,7 +275,7 @@ class Decider
       next if cell[:distance_from_my_base] >= cell[:distance_from_opp_base]
       cell
     end.sort_by do |cell|
-      [cell[:distance_from_my_base], -cell[:resources]]
+      [cell[:distance_from_my_base], -cell[:res]]
     end&.first
 
     eggs_closer_to_me&.[](:i)
@@ -291,7 +291,7 @@ class Decider
         cells[nearby_minerals.first]
       else
         cells.slice(*mineral_cell_indices).values.min_by do |cell|
-          [cell[:distance_from_my_base], -cell[:resources]]
+          [cell[:distance_from_my_base], -cell[:res]]
         end
       end
   end
