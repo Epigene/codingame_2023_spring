@@ -189,25 +189,7 @@ class Decider
         end
       end
     end
-    #======================
-
-    # @return [Cell hash] =
-    if my_ants_total < ant_count_cutoff
-      eggs_in_contested_ground = cells.slice(*(contested_cell_indices & egg_cell_indices)).values.min_by do |cell|
-        [cell[:distance_from_my_base], -cell[:res]]
-      end
-      debug "eggs_in_contested_ground: #{eggs_in_contested_ground}"
-
-      if eggs_in_contested_ground && cells[eggs_in_contested_ground[:i]][:res] > 0
-        yeah = opportunities_and_ongoing.map do |i|
-          "LINE #{my_base_indices.first} #{i} 5"
-        end.join("; ")
-
-        # return "#{StrengthDistributor.call(from: my_base_indices.first, to: eggs_in_contested_ground[:i], ants: my_ants_total, graph: graph)}; MESSAGE Jumping to collect contested eggs on #{eggs_in_contested_ground[:i]}"
-        return "LINE #{my_base_indices.first} #{eggs_in_contested_ground[:i]} 10; #{yeah}; MESSAGE Jumping to collect contested eggs on #{eggs_in_contested_ground[:i]}".gsub("; ; ", "; ")
-      end
-    end
-    #======================
+    #======================================================
 
     # @return [cell hash] ===
     if my_ants_total < ant_count_cutoff

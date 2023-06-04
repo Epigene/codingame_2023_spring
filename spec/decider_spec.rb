@@ -721,7 +721,7 @@ RSpec.describe Decider, instance_name: :decider do
         end
 
         it "returns a command to line to eggs AND preserve a minimal effort at minerals also" do
-          is_expected.to eq("LINE 18 13 10; LINE 18 24 5; LINE 18 8 5; MESSAGE Jumping to collect contested eggs on 13")
+          is_expected.to eq("BEACON 18 2466; BEACON 6 2466; BEACON 2 2466; BEACON 13 2603; MESSAGE close eggs on 13")
         end
       end
     end
@@ -964,6 +964,105 @@ RSpec.describe Decider, instance_name: :decider do
 
       it "returns a decision cross fade tail-end of egg gather" do
         is_expected.to eq("LINE 11 21 1; LINE 11 7 1; MESSAGE finishing egg gather and crossfading to mineral gather")
+      end
+    end
+
+    context "when seed=-2483980375159662600, neearby minerals, but far eggs" do
+      let(:cells) do
+        {
+          0 => {:i=>0, :type=>2, :res=>52, :ne_0=>-1, :ne_1=>1, :ne_2=>3, :ne_3=>-1, :ne_4=>2, :ne_5=>4},
+          1 => {:i=>1, :type=>0, :res=>0, :ne_0=>7, :ne_1=>9, :ne_2=>11, :ne_3=>3, :ne_4=>0, :ne_5=>-1},
+          2 => {:i=>2, :type=>0, :res=>0, :ne_0=>4, :ne_1=>0, :ne_2=>-1, :ne_3=>8, :ne_4=>10, :ne_5=>12},
+          3 => {:i=>3, :type=>0, :res=>0, :ne_0=>1, :ne_1=>11, :ne_2=>13, :ne_3=>15, :ne_4=>-1, :ne_5=>0},
+          4 => {:i=>4, :type=>0, :res=>0, :ne_0=>16, :ne_1=>-1, :ne_2=>0, :ne_3=>2, :ne_4=>12, :ne_5=>14},
+          5 => {:i=>5, :type=>0, :res=>0, :ne_0=>17, :ne_1=>19, :ne_2=>7, :ne_3=>-1, :ne_4=>16, :ne_5=>24},
+          6 => {:i=>6, :type=>0, :res=>0, :ne_0=>-1, :ne_1=>15, :ne_2=>23, :ne_3=>18, :ne_4=>20, :ne_5=>8},
+          7 => {:i=>7, :type=>1, :res=>31, :ne_0=>19, :ne_1=>-1, :ne_2=>9, :ne_3=>1, :ne_4=>-1, :ne_5=>5},
+          8 => {:i=>8, :type=>1, :res=>31, :ne_0=>2, :ne_1=>-1, :ne_2=>6, :ne_3=>20, :ne_4=>-1, :ne_5=>10},
+          9 => {:i=>9, :type=>1, :res=>34, :ne_0=>-1, :ne_1=>-1, :ne_2=>-1, :ne_3=>11, :ne_4=>1, :ne_5=>7},
+          10 => {:i=>10, :type=>1, :res=>34, :ne_0=>12, :ne_1=>2, :ne_2=>8, :ne_3=>-1, :ne_4=>-1, :ne_5=>-1},
+          11 => {:i=>11, :type=>0, :res=>0, :ne_0=>9, :ne_1=>-1, :ne_2=>-1, :ne_3=>13, :ne_4=>3, :ne_5=>1},
+          12 => {:i=>12, :type=>0, :res=>0, :ne_0=>14, :ne_1=>4, :ne_2=>2, :ne_3=>10, :ne_4=>-1, :ne_5=>-1},
+          13 => {:i=>13, :type=>0, :res=>0, :ne_0=>11, :ne_1=>-1, :ne_2=>-1, :ne_3=>21, :ne_4=>15, :ne_5=>3},
+          14 => {:i=>14, :type=>0, :res=>0, :ne_0=>22, :ne_1=>16, :ne_2=>4, :ne_3=>12, :ne_4=>-1, :ne_5=>-1},
+          15 => {:i=>15, :type=>0, :res=>0, :ne_0=>3, :ne_1=>13, :ne_2=>21, :ne_3=>23, :ne_4=>6, :ne_5=>-1},
+          16 => {:i=>16, :type=>0, :res=>0, :ne_0=>24, :ne_1=>5, :ne_2=>-1, :ne_3=>4, :ne_4=>14, :ne_5=>22},
+          17 => {:i=>17, :type=>0, :res=>0, :ne_0=>25, :ne_1=>27, :ne_2=>19, :ne_3=>5, :ne_4=>24, :ne_5=>-1},
+          18 => {:i=>18, :type=>0, :res=>0, :ne_0=>6, :ne_1=>23, :ne_2=>-1, :ne_3=>26, :ne_4=>28, :ne_5=>20},
+          19 => {:i=>19, :type=>0, :res=>0, :ne_0=>27, :ne_1=>-1, :ne_2=>-1, :ne_3=>7, :ne_4=>5, :ne_5=>17},
+          20 => {:i=>20, :type=>0, :res=>0, :ne_0=>8, :ne_1=>6, :ne_2=>18, :ne_3=>28, :ne_4=>-1, :ne_5=>-1},
+          21 => {:i=>21, :type=>0, :res=>0, :ne_0=>13, :ne_1=>-1, :ne_2=>-1, :ne_3=>29, :ne_4=>23, :ne_5=>15},
+          22 => {:i=>22, :type=>0, :res=>0, :ne_0=>30, :ne_1=>24, :ne_2=>16, :ne_3=>14, :ne_4=>-1, :ne_5=>-1},
+          23 => {:i=>23, :type=>0, :res=>0, :ne_0=>15, :ne_1=>21, :ne_2=>29, :ne_3=>-1, :ne_4=>18, :ne_5=>6},
+          24 => {:i=>24, :type=>0, :res=>0, :ne_0=>-1, :ne_1=>17, :ne_2=>5, :ne_3=>16, :ne_4=>22, :ne_5=>30},
+          25 => {:i=>25, :type=>1, :res=>10, :ne_0=>-1, :ne_1=>31, :ne_2=>27, :ne_3=>17, :ne_4=>-1, :ne_5=>38},
+          26 => {:i=>26, :type=>1, :res=>10, :ne_0=>18, :ne_1=>-1, :ne_2=>37, :ne_3=>-1, :ne_4=>32, :ne_5=>28},
+          27 => {:i=>27, :type=>2, :res=>65, :ne_0=>31, :ne_1=>33, :ne_2=>-1, :ne_3=>19, :ne_4=>17, :ne_5=>25},
+          28 => {:i=>28, :type=>2, :res=>65, :ne_0=>20, :ne_1=>18, :ne_2=>26, :ne_3=>32, :ne_4=>34, :ne_5=>-1},
+          29 => {:i=>29, :type=>0, :res=>0, :ne_0=>21, :ne_1=>-1, :ne_2=>-1, :ne_3=>35, :ne_4=>-1, :ne_5=>23},
+          30 => {:i=>30, :type=>0, :res=>0, :ne_0=>36, :ne_1=>-1, :ne_2=>24, :ne_3=>22, :ne_4=>-1, :ne_5=>-1},
+          31 => {:i=>31, :type=>0, :res=>0, :ne_0=>-1, :ne_1=>-1, :ne_2=>33, :ne_3=>27, :ne_4=>25, :ne_5=>-1},
+          32 => {:i=>32, :type=>0, :res=>0, :ne_0=>28, :ne_1=>26, :ne_2=>-1, :ne_3=>-1, :ne_4=>-1, :ne_5=>34},
+          33 => {:i=>33, :type=>2, :res=>270, :ne_0=>-1, :ne_1=>-1, :ne_2=>-1, :ne_3=>-1, :ne_4=>27, :ne_5=>31},
+          34 => {:i=>34, :type=>2, :res=>270, :ne_0=>-1, :ne_1=>28, :ne_2=>32, :ne_3=>-1, :ne_4=>-1, :ne_5=>-1},
+          35 => {:i=>35, :type=>0, :res=>0, :ne_0=>29, :ne_1=>-1, :ne_2=>-1, :ne_3=>-1, :ne_4=>37, :ne_5=>-1},
+          36 => {:i=>36, :type=>0, :res=>0, :ne_0=>-1, :ne_1=>38, :ne_2=>-1, :ne_3=>30, :ne_4=>-1, :ne_5=>-1},
+          37 => {:i=>37, :type=>0, :res=>0, :ne_0=>-1, :ne_1=>35, :ne_2=>-1, :ne_3=>-1, :ne_4=>-1, :ne_5=>26},
+          38 => {:i=>38, :type=>0, :res=>0, :ne_0=>-1, :ne_1=>-1, :ne_2=>25, :ne_3=>-1, :ne_4=>36, :ne_5=>-1},
+        }
+      end
+
+      let(:my_base_indices) { [32] }
+      let(:opp_base_indices) { [31] }
+
+      context "when nearby eggs are gathered and it's time to go afield" do
+        let(:cell_updates) do
+          [
+            {:i=>0, :res=>52, :my_ants=>0, :opp_ants=>0},
+            {:i=>1, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>2, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>3, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>4, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>5, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>6, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>7, :res=>31, :my_ants=>0, :opp_ants=>0},
+            {:i=>8, :res=>31, :my_ants=>0, :opp_ants=>0},
+            {:i=>9, :res=>34, :my_ants=>0, :opp_ants=>0},
+            {:i=>10, :res=>34, :my_ants=>0, :opp_ants=>0},
+            {:i=>11, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>12, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>13, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>14, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>15, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>16, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>17, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>18, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>19, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>20, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>21, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>22, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>23, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>24, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>25, :res=>0, :my_ants=>0, :opp_ants=>7},
+            {:i=>26, :res=>0, :my_ants=>7, :opp_ants=>0},
+            {:i=>27, :res=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>28, :res=>65, :my_ants=>0, :opp_ants=>0},
+            {:i=>29, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>30, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>31, :res=>0, :my_ants=>0, :opp_ants=>13},
+            {:i=>32, :res=>0, :my_ants=>13, :opp_ants=>0},
+            {:i=>33, :res=>270, :my_ants=>0, :opp_ants=>0},
+            {:i=>34, :res=>270, :my_ants=>0, :opp_ants=>0},
+            {:i=>35, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>36, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>37, :res=>0, :my_ants=>0, :opp_ants=>0},
+            {:i=>38, :res=>0, :my_ants=>0, :opp_ants=>0},
+          ]
+        end
+
+        it "returns a decision to go for the nearest egg cluster" do
+          is_expected.to eq("BEACON 32 2500; BEACON 28 2500; BEACON 20 2500; BEACON 8 2500; MESSAGE close eggs on 8")
+        end
       end
     end
   end
