@@ -102,8 +102,14 @@ class Decider
       end
 
       if eggs_within_1_of_base.any?
-        base = eggs_within_1_of_base.map do |i|
-          "LINE #{my_base_indices.first} #{i} 1"
+        cluster_eggs = Set.new
+        eggs_within_1_of_base.each do |i|
+          next if cells[i][:my_ants].zero?
+          cluster_eggs += graph.neighbors_within(i, 1) & egg_cell_indices
+        end
+
+        base = [*eggs_within_1_of_base, my_base_indices.first, *cluster_eggs].uniq.sort.map do |i|
+          "BEACON #{i} 10"
         end.join("; ")
 
         if eggs_within_1_of_base.one?

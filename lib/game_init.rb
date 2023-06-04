@@ -18,7 +18,7 @@ end
 
 cells.each_pair do |k, v|
   # next if k < 32
-  debug "#{k} => #{v},"
+  # debug "#{k} => #{v},"
 end
 
 number_of_bases = gets.to_i
