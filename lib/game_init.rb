@@ -17,7 +17,7 @@ number_of_cells.times do |i|
 end
 
 cells.each_pair do |k, v|
-  next if k < 32
+  # next if k < 32
   debug "#{k} => #{v},"
 end
 

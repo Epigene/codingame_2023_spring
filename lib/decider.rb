@@ -116,7 +116,7 @@ class Decider
 
             if expected_gathered_eggs + my_ants_total >= ant_count_cutoff
               # go for minerals
-              return "LINE #{my_base_indices.first} #{eggs_within_1_of_base.first} 1; LINE #{my_base_indices.first} #{best_mining_candidate} 1; MESSAGE finishing egg gather and crossfading to mineral gather"
+              return "LINE #{my_base_indices.first} #{eggs_within_1_of_base.first} 1; LINE #{my_base_indices.first} #{best_mining_candidate[:i]} 1; MESSAGE finishing egg gather and crossfading to mineral gather"
             else
               # still eggs to gather
               base = "BEACON #{eggs_within_1_of_base.first} 9; LINE #{my_base_indices.first} #{best_egg_candidate(except: [eggs_within_1_of_base.first])} 10"
