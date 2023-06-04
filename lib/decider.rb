@@ -52,15 +52,18 @@ class Decider
   end
 
   def decide_on(cell_updates:)
+    @nearby_minerals = nil
     @best_mining_candidate = nil # resetting memoisation from previous turns
-    my_ants_total = 0
+    @my_ants_total = 0
+    @my_ant_cell_indices = []
 
     cell_update_ms = Benchmark.realtime do
       cell_updates.each do |cell_update|
         next if cells[cell_update[:i]].nil?
 
         cells[cell_update[:i]].merge!(cell_update)
-        my_ants_total += cell_update[:my_ants]
+        @my_ants_total += cell_update[:my_ants]
+        my_ant_cell_indices << cell_update[:i] if cell_update[:my_ants].positive?
 
         if cell_update[:resources].zero?
           egg_cell_indices.delete(cell_update[:i])
@@ -99,7 +102,15 @@ class Decider
         expected_gathered_eggs = [cell[:resources], cell[:my_ants]].min
 
         if expected_gathered_eggs + my_ants_total >= ant_count_cutoff
-          return "#{base}; LINE #{my_base_indices.first} #{best_mining_candidate[:i]} 1000; MESSAGE Finishing egg gathering and looking for bonus minerals"
+          if nearby_minerals.any?
+            nearby_portion = nearby_minerals.map do |near_i|
+              "BEACON #{near_i} 2000"
+            end.join("; ")
+
+            return "#{base}; #{nearby_portion}; MESSAGE Finishing egg gathering and expanding to nearby minerals"
+          else
+            return "#{base}; LINE #{my_base_indices.first} #{best_mining_candidate[:i]} 1000; MESSAGE Finishing egg gathering and looking for bonus minerals"
+          end
         else
           return "#{base}; MESSAGE Continuing egg gathering"
         end
@@ -108,14 +119,15 @@ class Decider
     #======================
 
     # @return [Cell hash] =
-    eggs_in_contested_ground = cells.slice(*(contested_cell_indices & egg_cell_indices)).values.max_by do |cell|
-      cell[:resources]
-    end
-    debug "eggs_in_contested_ground: #{eggs_in_contested_ground}"
+    if my_ants_total < ant_count_cutoff
+      eggs_in_contested_ground = cells.slice(*(contested_cell_indices & egg_cell_indices)).values.min_by do |cell|
+        [cell[:distance_from_my_base], -cell[:resources]]
+      end
+      debug "eggs_in_contested_ground: #{eggs_in_contested_ground}"
 
-    if eggs_in_contested_ground && cells[eggs_in_contested_ground[:i]][:resources] > 0
-      # puts "LINE #{my_base_indices.first} #{eggs_in_contested_ground[:i]} 1; MESSAGE Jumping to collect contested eggs on #{eggs_in_contested_ground[:i]}"
-      return "#{StrengthDistributor.call(from: my_base_indices.first, to: eggs_in_contested_ground[:i], ants: my_ants_total, graph: graph)}; MESSAGE Jumping to collect contested eggs on #{eggs_in_contested_ground[:i]}"
+      if eggs_in_contested_ground && cells[eggs_in_contested_ground[:i]][:resources] > 0
+        return "#{StrengthDistributor.call(from: my_base_indices.first, to: eggs_in_contested_ground[:i], ants: my_ants_total, graph: graph)}; MESSAGE Jumping to collect contested eggs on #{eggs_in_contested_ground[:i]}"
+      end
     end
     #======================
 
@@ -170,12 +182,31 @@ class Decider
 
   private
 
-  attr_reader :cells, :graph, :number_of_bases, :my_base_indices, :opp_base_indices, :eggs_at_start_of_game
+  attr_reader :cells, :graph, :number_of_bases, :my_base_indices, :opp_base_indices,
+    :eggs_at_start_of_game, :my_ant_cell_indices, :my_ants_total
 
+  # @return [Hash cell]
   def best_mining_candidate
-    @best_mining_candidate ||= cells.slice(*mineral_cell_indices).values.min_by do |cell|
-      [cell[:distance_from_my_base], -cell[:resources]]
+    return @best_mining_candidate if @best_mining_candidate
+
+    @best_mining_candidate =
+      if nearby_minerals.any?
+        debug "Yay, found nearby minerals!"
+        cells[nearby_minerals.first]
+      else
+        cells.slice(*mineral_cell_indices).values.min_by do |cell|
+          [cell[:distance_from_my_base], -cell[:resources]]
+        end
+      end
+  end
+
+  def nearby_minerals
+    return @nearby_minerals if @nearby_minerals
+    mem = Set.new
+    my_ant_cell_indices.each do |ant_cell_i|
+      mem |= graph.neighbors_within(ant_cell_i, 1)
     end
+    @nearby_minerals = mem & mineral_cell_indices
   end
 
   def egg_cell_indices
