@@ -108,8 +108,13 @@ class Decider
           cluster_eggs += graph.neighbors_within(i, 1) & egg_cell_indices
         end
 
+        strengths = {}
+        eggs_within_1_of_base.each { |i| strengths[i] = 10 }
+        strengths[my_base_indices.first] = 10
+        cluster_eggs.each { |i| strengths[i] = 20 }
+
         base = [*eggs_within_1_of_base, my_base_indices.first, *cluster_eggs].uniq.sort.map do |i|
-          "BEACON #{i} 10"
+          "BEACON #{i} #{strengths[i]}"
         end.join("; ")
 
         if eggs_within_1_of_base.one?
